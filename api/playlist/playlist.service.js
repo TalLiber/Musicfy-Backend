@@ -71,8 +71,11 @@ async function add(playlist) {
 async function update(playlist) {
   try {
     const playlistToSave = {
-      vendor: playlist.vendor,
-      price: playlist.price,
+      spotifyId: playlist.spotifyId,
+      name: playlist.name,
+      description: playlist.description,
+      image: playlist.image,
+      tracks: playlist.tracks,
     }
     const collection = await dbService.getCollection('playlist')
     await collection.updateOne(
