@@ -7,7 +7,7 @@ async function getPlaylists(req, res) {
   try {
     logger.debug('Getting Playlists')
     const filterBy = {
-      txt: req.query.txt || ''
+      txt: req.query.txt || '',
     }
     const playlists = await playlistService.query(filterBy)
     res.json(playlists)
@@ -19,9 +19,17 @@ async function getPlaylists(req, res) {
 
 async function getPlaylistById(req, res) {
   try {
-    const playlistId = req.params.id
-    const playlist = await playlistService.getById(playlistId)
+    const playlist = await playlistService.getById(req.params.id)
     res.json(playlist)
+  } catch (err) {
+    logger.error('Failed to get playlist', err)
+    res.status(500).send({ err: 'Failed to get playlist' })
+  }
+}
+async function getCategoryPlaylists(req, res) {
+  try {
+    const categoryPlaylists = await playlistService.getCategoryById(req.params.id)
+    res.json(categoryPlaylists)
   } catch (err) {
     logger.error('Failed to get playlist', err)
     res.status(500).send({ err: 'Failed to get playlist' })
@@ -29,7 +37,7 @@ async function getPlaylistById(req, res) {
 }
 
 async function addPlaylist(req, res) {
-  const {loggedinUser} = req
+  const { loggedinUser } = req
 
   try {
     const playlist = req.body
@@ -42,7 +50,6 @@ async function addPlaylist(req, res) {
   }
 }
 
-
 async function updatePlaylist(req, res) {
   try {
     const playlist = req.body
@@ -51,7 +58,6 @@ async function updatePlaylist(req, res) {
   } catch (err) {
     logger.error('Failed to update playlist', err)
     res.status(500).send({ err: 'Failed to update playlist' })
-
   }
 }
 
@@ -67,34 +73,32 @@ async function removePlaylist(req, res) {
 }
 
 async function addPlaylistMsg(req, res) {
-  const {loggedinUser} = req
+  const { loggedinUser } = req
   try {
     const playlistId = req.params.id
     const msg = {
       txt: req.body.txt,
-      by: loggedinUser
+      by: loggedinUser,
     }
     const savedMsg = await playlistService.addPlaylistMsg(playlistId, msg)
     res.json(savedMsg)
   } catch (err) {
     logger.error('Failed to update playlist', err)
     res.status(500).send({ err: 'Failed to update playlist' })
-
   }
 }
 
 async function removePlaylistMsg(req, res) {
-  const {loggedinUser} = req
+  const { loggedinUser } = req
   try {
     const playlistId = req.params.id
-    const {msgId} = req.params
+    const { msgId } = req.params
 
     const removedId = await playlistService.removePlaylistMsg(playlistId, msgId)
     res.send(removedId)
   } catch (err) {
     logger.error('Failed to remove playlist msg', err)
     res.status(500).send({ err: 'Failed to remove playlist msg' })
-
   }
 }
 
@@ -105,5 +109,6 @@ module.exports = {
   updatePlaylist,
   removePlaylist,
   addPlaylistMsg,
-  removePlaylistMsg
+  removePlaylistMsg,
+  getCategoryPlaylists
 }

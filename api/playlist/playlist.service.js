@@ -1,14 +1,10 @@
-const axios = require('axios')
-require('dotenv').config()
-
 const dbService = require('../../services/db.service')
+const httpService = require ('../../services/http.service')
 const logger = require('../../services/logger.service')
 const utilService = require('../../services/util.service')
-const { getPlaylists } = require('./playlist.controller')
 const { log } = require('../../middlewares/logger.middleware')
 const ObjectId = require('mongodb').ObjectId
 
-let gAccessToken = _setAccessToken()
 
 async function query(filterBy = { txt: '' }) {
   try {
@@ -23,15 +19,25 @@ async function query(filterBy = { txt: '' }) {
     throw err
   }
 }
+async function getCategoryById(categoryId) {
+  try {
+    const categoryPlaylists = await httpService.getSpotifyItems('categoryPlaylists', categoryId)
+    return categoryPlaylists
+  } catch (err) {
+    logger.error(`cannot add playlist msg ${playlistId}`, err)
+    throw err
+  }
+}
 
-async function getById(spotifyId) {
+async function getById(playlistId) {
   try {
     const collection = await dbService.getCollection('playlist')
-    let playlist = collection.findOne({ spotifyId: spotifyId })
+    let playlist = await collection.findOne({ spotifyId: playlistId })
     if (!playlist) {
-      playlist = await _getSpotifyPlaylist(spotifyId)
-      
-      console.log('playlist', playlist)
+      playlist = await httpService.getSpotifyItems('playlist', playlistId)
+      playlist.tracks = await httpService.getSpotifyItems('tracks', playlistId)
+      playlist.spotifyId = playlistId
+      playlist = await add(playlist)
     }
     return playlist
   } catch (err) {
@@ -109,49 +115,8 @@ async function removePlaylistMsg(playlistId, msgId) {
   }
 }
 
-async function _setAccessToken() {
-  try {
-    return await _getAccessToken()
-  } catch (err) {
-    logger.error(err)
-    throw err
-  }
-}
 
-async function _getAccessToken() {
-  try {
-    // Encode client credentials (Client ID and Client Secret)
-    const credentials = `${process.env.clientId}:${process.env.clientSecret}`
-    const encodedCredentials = Buffer.from(credentials).toString('base64')
 
-    // Make a POST request to the token endpoint
-    const response = await axios.post(
-      'https://accounts.spotify.com/api/token',
-      new URLSearchParams({
-        grant_type: 'client_credentials',
-      }).toString(),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${encodedCredentials}`,
-        },
-      }
-    )
-
-    // Extract and return the access token from the response
-    const { data } = response
-    const accessToken = data.access_token
-    const expiresIn = data.expires_in
-    console.log('accessToken', accessToken)
-    return { accessToken, expiresIn }
-  } catch (error) {
-    console.error(
-      'Error retrieving access token:',
-      error.response ? error.response.data : error.message
-    )
-    throw error
-  }
-}
 
 module.exports = {
   remove,
@@ -161,4 +126,5 @@ module.exports = {
   update,
   addPlaylistMsg,
   removePlaylistMsg,
+  getCategoryById
 }
