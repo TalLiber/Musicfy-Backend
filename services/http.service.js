@@ -7,7 +7,7 @@ _setAccessToken()
 
 async function getSpotifyItems(reqType, id) {
   const endpoints = {
-    categoryPlaylists: `https://api.spotify.com/v1/browse/categories/${id}/playlists`,
+    categoryPlaylists: `https://api.spotify.com/v1/browse/categories/${id}/playlists?country=il`,
     playlist: `https://api.spotify.com/v1/playlists/${id}`,
     tracks: `https://api.spotify.com/v1/playlists/${id}/tracks`,
   }
