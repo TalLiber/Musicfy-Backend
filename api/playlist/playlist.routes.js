@@ -15,6 +15,7 @@ router.post('/', addPlaylist)
 router.put('/:id', updatePlaylist)
 // router.put('/:id', requireAuth, updatePlaylist)
 // router.delete('/:id', requireAuth, removePlaylist)
+router.delete('/:id', removePlaylist)
 // router.delete('/:id', requireAuth, requireAdmin, removePlaylist)
 
 // router.post('/:id/msg', requireAuth, addPlaylistMsg)

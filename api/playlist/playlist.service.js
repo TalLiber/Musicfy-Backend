@@ -35,7 +35,10 @@ async function getById(playlistId) {
   try {
     const collection = await dbService.getCollection('playlist')
     let playlist = await collection.findOne({ spotifyId: playlistId })
-    if (!playlist) {
+    if (!playlist && playlistId.includes('1234s')) {
+      playlist = await collection.findOne({ _id: ObjectId(playlistId.slice(5,playlistId.length)) })
+      console.log( 'spotify',playlist)
+    }else if (!playlist){
       playlist = await httpService.getSpotifyItems('playlist', playlistId)
       playlist.tracks = await httpService.getSpotifyItems('tracks', playlistId)
       playlist.spotifyId = playlistId
@@ -50,6 +53,7 @@ async function getById(playlistId) {
 
 async function remove(playlistId) {
   try {
+    console.log('playlistId',typeof playlistId, playlistId)
     const collection = await dbService.getCollection('playlist')
     await collection.deleteOne({ _id: ObjectId(playlistId) })
     return playlistId
