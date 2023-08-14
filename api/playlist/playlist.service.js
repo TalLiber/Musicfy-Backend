@@ -4,9 +4,11 @@ const logger = require('../../services/logger.service')
 const utilService = require('../../services/util.service')
 const { log } = require('../../middlewares/logger.middleware')
 const ObjectId = require('mongodb').ObjectId
+const home = require('../../data/home.json')
 
 
 async function query(filterBy = { txt: '' }) {
+  if(filterBy.txt === 'HomePage') return home
   try {
     const criteria = {
       vendor: { $regex: filterBy.txt, $options: 'i' },
