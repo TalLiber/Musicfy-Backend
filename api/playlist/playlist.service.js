@@ -51,6 +51,7 @@ async function getById(playlistId) {
 
 async function remove(playlistId) {
   try {
+    console.log('playlistId',typeof playlistId, playlistId)
     const collection = await dbService.getCollection('playlist')
     await collection.deleteOne({ _id: ObjectId(playlistId) })
     return playlistId
