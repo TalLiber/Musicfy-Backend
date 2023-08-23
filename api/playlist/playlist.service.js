@@ -21,9 +21,20 @@ async function query(filterBy = { txt: '' }) {
     throw err
   }
 }
+
 async function getCategoryById(categoryId) {
   try {
     const categoryPlaylists = await httpService.getSpotifyItems('categoryPlaylists', categoryId)
+    return categoryPlaylists
+  } catch (err) {
+    logger.error(`cannot add playlist msg ${playlistId}`, err)
+    throw err
+  }
+}
+
+async function getSearchItems(searchKey, searchType) {
+  try {
+    const reqItems = await httpService.getSpotifyItems('search', searchKey, searchType)
     return categoryPlaylists
   } catch (err) {
     logger.error(`cannot add playlist msg ${playlistId}`, err)
@@ -135,5 +146,6 @@ module.exports = {
   update,
   addPlaylistMsg,
   removePlaylistMsg,
-  getCategoryById
+  getCategoryById,
+  getSearchItems
 }

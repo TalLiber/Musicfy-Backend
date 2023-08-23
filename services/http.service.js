@@ -5,11 +5,13 @@ let gAccessToken = null
 
 _setAccessToken()
 
-async function getSpotifyItems(reqType, id) {
+async function getSpotifyItems(reqType, id, searchType) {
+  console.log(reqType, id, searchType);
   const endpoints = {
     categoryPlaylists: `https://api.spotify.com/v1/browse/categories/${id}/playlists?country=il`,
     playlist: `https://api.spotify.com/v1/playlists/${id}`,
     tracks: `https://api.spotify.com/v1/playlists/${id}/tracks`,
+    search: `https://api.spotify.com/v1/search?q=${id}&type=${searchType}`
   }
 
   try {
@@ -19,7 +21,6 @@ async function getSpotifyItems(reqType, id) {
         Authorization: `Bearer ${gAccessToken}`,
       },
     })
-
     // Return the playlist data from the response
     let cleanData
     switch (reqType) {
@@ -31,6 +32,12 @@ async function getSpotifyItems(reqType, id) {
         break
       case 'tracks':
         cleanData = _cleanPlaylistsTracksData(response.data)
+        break
+      case 'search':
+        console.log('response',response.data.artists.items);
+
+        // cleanData = _cleanPlaylistsTracksData(response.data)
+        return
         break
     }
 

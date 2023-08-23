@@ -1,7 +1,7 @@
 const express = require('express')
 const { requireAuth, requireAdmin } = require('../../middlewares/requireAuth.middleware')
 const { log } = require('../../middlewares/logger.middleware')
-const { getCategoryPlaylists, getPlaylists, getPlaylistById, addPlaylist, updatePlaylist, removePlaylist, addPlaylistMsg, removePlaylistMsg } = require('./playlist.controller')
+const { getCategoryPlaylists, getPlaylists, getPlaylistById, addPlaylist, updatePlaylist, removePlaylist, addPlaylistMsg, removePlaylistMsg, searchItems } = require('./playlist.controller')
 const router = express.Router()
 
 // middleware that is specific to this router
@@ -11,6 +11,7 @@ router.get('/', getPlaylists)
 router.get('/category/:id',getCategoryPlaylists)
 router.get('/:id', getPlaylistById)
 router.post('/', addPlaylist)
+router.post('/search', searchItems)
 // router.post('/', requireAuth, addPlaylist)
 router.put('/:id', updatePlaylist)
 // router.put('/:id', requireAuth, updatePlaylist)

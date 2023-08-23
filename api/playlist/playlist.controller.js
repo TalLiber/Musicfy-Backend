@@ -35,6 +35,16 @@ async function getCategoryPlaylists(req, res) {
     res.status(500).send({ err: 'Failed to get playlist' })
   }
 }
+async function searchItems(req, res) {
+  const {searchKey, searchType} = req.body
+  try {
+    const resItems = await playlistService.getSearchItems(searchKey, searchType)
+    // res.json(categoryPlaylists)
+  } catch (err) {
+    logger.error('Failed to get playlist', err)
+    res.status(500).send({ err: 'Failed to get playlist' })
+  }
+}
 
 async function addPlaylist(req, res) {
   const { loggedinUser } = req
@@ -110,5 +120,6 @@ module.exports = {
   removePlaylist,
   addPlaylistMsg,
   removePlaylistMsg,
-  getCategoryPlaylists
+  getCategoryPlaylists,
+  searchItems
 }
