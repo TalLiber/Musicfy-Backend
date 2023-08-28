@@ -6,12 +6,12 @@ let gAccessToken = null
 _setAccessToken()
 
 async function getSpotifyItems(reqType, id, searchType) {
-  console.log(reqType, id, searchType);
+  console.log(reqType, id, searchType)
   const endpoints = {
     categoryPlaylists: `https://api.spotify.com/v1/browse/categories/${id}/playlists?country=il`,
     playlist: `https://api.spotify.com/v1/playlists/${id}`,
     tracks: `https://api.spotify.com/v1/playlists/${id}/tracks`,
-    search: `https://api.spotify.com/v1/search?q=${id}&type=${searchType}`
+    search: `https://api.spotify.com/v1/search?q=${id}&type=${searchType}`,
   }
 
   try {
@@ -34,10 +34,7 @@ async function getSpotifyItems(reqType, id, searchType) {
         cleanData = _cleanPlaylistsTracksData(response.data)
         break
       case 'search':
-        console.log('response',response.data.artists.items);
-
-        // cleanData = _cleanPlaylistsTracksData(response.data)
-        return
+        cleanData = _cleanSearch(response.data, searchType)
         break
     }
 
@@ -95,7 +92,14 @@ async function _getAccessToken() {
     throw error
   }
 }
-
+function _cleanSearch(data, searchType) {
+  switch (searchType) {
+    case 'track':
+      return _cleanSearchTracksData(data.tracks)
+    case 'album':
+      return _cleanAlbumData(data.albums)
+  }
+}
 function _cleanCategoryPlaylistsData(data) {
   return data.playlists.items.map((categoryPlaylist) => {
     return {
@@ -108,11 +112,23 @@ function _cleanCategoryPlaylistsData(data) {
 }
 
 function _cleanPlaylistsData(data) {
+  return {
+    name: data.name,
+    description: data.description,
+    image: data.images[0].url,
+  }
+}
+
+function _cleanAlbumData(data) {
+  return data.items.map((item) => {
     return {
-      name: data.name,
-      description: data.description,
-      image: data.images[0].url,
+      release_date: item.release_date.substring(0,4),
+      id: item.id,
+      title: item.name,
+      artists: _cleanArtists(item.artists),
+      imgUrl: item.images[0].url,
     }
+  })
 }
 
 function _cleanPlaylistsTracksData(data) {
@@ -125,6 +141,19 @@ function _cleanPlaylistsTracksData(data) {
       imgUrl: item.track.album.images[0].url,
       formalDuration: item.track.duration_ms,
       album: item.track.album.name,
+      youtubeId: '',
+    }
+  })
+}
+function _cleanSearchTracksData(data) {
+  return data.items.map((item) => {
+    return {
+      id: item.id,
+      title: item.name,
+      artists: _cleanArtists(item.artists),
+      imgUrl: item.album.images[0].url,
+      formalDuration: item.duration_ms,
+      album: item.album.name,
       youtubeId: '',
     }
   })

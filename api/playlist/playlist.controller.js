@@ -39,7 +39,7 @@ async function searchItems(req, res) {
   const {searchKey, searchType} = req.body
   try {
     const resItems = await playlistService.getSearchItems(searchKey, searchType)
-    // res.json(categoryPlaylists)
+    res.json(resItems)
   } catch (err) {
     logger.error('Failed to get playlist', err)
     res.status(500).send({ err: 'Failed to get playlist' })

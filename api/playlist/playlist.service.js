@@ -35,7 +35,7 @@ async function getCategoryById(categoryId) {
 async function getSearchItems(searchKey, searchType) {
   try {
     const reqItems = await httpService.getSpotifyItems('search', searchKey, searchType)
-    return categoryPlaylists
+    return reqItems
   } catch (err) {
     logger.error(`cannot add playlist msg ${playlistId}`, err)
     throw err
