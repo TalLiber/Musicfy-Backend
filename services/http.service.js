@@ -98,7 +98,19 @@ function _cleanSearch(data, searchType) {
       return _cleanSearchTracksData(data.tracks)
     case 'album':
       return _cleanAlbumData(data.albums)
+    case 'playlist':
+      return _cleanSearchPlaylistData(data)
   }
+}
+function _cleanSearchPlaylistData(data) {
+  return data.playlists.items.map((categoryPlaylist) => {
+    return {
+      spotifyId: categoryPlaylist.id,
+      name: categoryPlaylist.name,
+      description: categoryPlaylist.owner.display_name,
+      image: categoryPlaylist.images[0].url,
+    }
+  })
 }
 function _cleanCategoryPlaylistsData(data) {
   return data.playlists.items.map((categoryPlaylist) => {
